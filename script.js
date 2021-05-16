@@ -112,10 +112,13 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
+  var uuuid;
+  var pPin;
+  var uUsername
      
     $("#btnLogin" ).click(function(event) {
-        debugger;
-       var userId= $('#UserId').val();
+        
+        var userId= $('#UserId').val();
         var pwd=$('#UserPwd').val();
         if(userId=='' || pwd==''){
             alert("Please enter all field");
@@ -125,15 +128,19 @@ const inputClosePin = document.querySelector('.form__input--pin');
             for(i=0 ;i<accounts.length;i++){
                 var accountdetail=accounts[i];
                 var username=accountdetail.owner;
-                var uuid=username.substring(0,2);
+                var uui = username.split(" ");
+                var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
                 var Pin=accountdetail.pin;
     
                 if(userId==uuid && pwd==Pin){
-                    debugger;
-                    $('.app').css('opacity', '100');
+                    // debugger;
+                    containerApp.style.opacity = "1";
+                    // $('.app').css('opacity', '100');
                     $('.welcome').text("Welcome back, "+username+"");
                     $('.login').hide();
-                 
+                    uuuid = uuid;
+                    pPin = Pin;
+                    uUsername = username;
 
                     var j;
                     for(j=0; j<accountdetail.movements.length;j++){
@@ -222,3 +229,20 @@ const inputClosePin = document.querySelector('.form__input--pin');
         event.preventDefault() 
     })
   
+
+    $("#btnClose" ).click(function(event) {
+
+        var closeUserId= $('#closeUserId').val();
+        var closePwd=$('#closePwd').val();
+
+        if(closeUserId=='' || closePwd==''){
+            alert("Please enter all field");
+        }
+        else if(closeUserId==uuuid && closePwd==pPin){
+            containerApp.style.opacity = "0";
+            $('.welcome').text("Bye "+uUsername+" ! Hope to See you Again");
+            $('.login').hide();
+        }
+        
+        event.preventDefault()
+    });
