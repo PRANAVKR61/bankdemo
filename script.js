@@ -90,7 +90,7 @@ const labelBalance = document.querySelector('.balance__value');
 const labelSumIn = document.querySelector('.summary__value--in');
 const labelSumOut = document.querySelector('.summary__value--out');
 const labelSumInterest = document.querySelector('.summary__value--interest');
-const labelTimer = document.querySelector('.timer');
+
 
 
 const containerApp = document.querySelector('.app');
@@ -114,7 +114,11 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
   var uuuid;
   var pPin;
-  var uUsername
+  var uUsername;
+
+  const startingMinutes = 5;
+  var time = startingMinutes * 60;
+  const labelTimer = document.querySelector('.timer');
      
     $("#btnLogin" ).click(function(event) {
         
@@ -141,6 +145,15 @@ const inputClosePin = document.querySelector('.form__input--pin');
                     uuuid = uuid;
                     pPin = Pin;
                     uUsername = username;
+
+                    var intval = setInterval(updateCountDown, 1000);
+                    setTimeout(() => { 
+                        clearInterval(intval);
+                        containerApp.style.opacity = "0";
+                        $('.welcome').text(" Log in to get started ");
+                        $('.login').show();
+
+                     }, time*1000);
 
                     var j;
                     for(j=0; j<accountdetail.movements.length;j++){
@@ -175,7 +188,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
  
     $('#TransferMoney').on('click',function(event){
-        debugger;
+        //debugger;
         var transferAcnt=$("#transferaAcc").val();
         var amountToTransfer=$("#amountTransfer").val();
         var userId= $('#UserId').val();
@@ -242,7 +255,23 @@ const inputClosePin = document.querySelector('.form__input--pin');
             containerApp.style.opacity = "0";
             $('.welcome').text("Bye "+uUsername+" ! Hope to See you Again");
             $('.login').hide();
+            clearInterval(intval);
         }
         
         event.preventDefault()
     });
+
+
+    function updateCountDown(){
+        const minutes = Math.floor(time/60);
+        let second = time % 60;
+      
+        // console.log(minutes+":"+second)
+        console.log(labelTimer);
+        labelTimer.innerHTML = minutes +":"+second;
+    
+        if(time>0){
+            time--;
+        } 
+        console.log(time)
+      }
