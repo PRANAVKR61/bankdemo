@@ -158,6 +158,7 @@ const labelTimer = document.querySelector('.timer');
                 var uui = username.split(" ");
                 var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
                 var Pin=accountdetail.pin;
+                
     
                 if(userId==uuid && pwd==Pin){
                     debugger;
