@@ -90,7 +90,7 @@ const labelBalance = document.querySelector('.balance__value');
 const labelSumIn = document.querySelector('.summary__value--in');
 const labelSumOut = document.querySelector('.summary__value--out');
 const labelSumInterest = document.querySelector('.summary__value--interest');
-const labelTimer = document.querySelector('.timer');
+
 
 
 const containerApp = document.querySelector('.app');
@@ -233,7 +233,7 @@ const labelTimer = document.querySelector('.timer');
 
  
     $('#TransferMoney').on('click',function(event){
-        debugger;
+        //debugger;
         var transferAcnt=$("#transferaAcc").val();
         var amountToTransfer=$("#amountTransfer").val();
         var userId= $('#UserId').val();
