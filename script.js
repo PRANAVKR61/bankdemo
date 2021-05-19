@@ -63,7 +63,7 @@ const account1 = {
   
   const account4 = {
     owner: 'Sarah Smith',
-    movements: [430, 1000, 700, 50, 90,],
+    movements: [430, 1000, 700, 50, 90],
     interestRate: 1,
     pin: 4444,
   movementsDates: [
@@ -112,47 +112,112 @@ const inputLoanAmount = document.querySelector('.form__input--loan-amount');
 const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
-     
+const transferamnt=[];
+
+const uuu=[];
+
+var uuuid;
+var pPin;
+var uUsername;
+
+const startingMinutes = 5;
+var time = startingMinutes * 60;
+const labelTimer = document.querySelector('.timer');
+
+
     $("#btnLogin" ).click(function(event) {
         debugger;
+         
+       
        var userId= $('#UserId').val();
         var pwd=$('#UserPwd').val();
+        var amnt=transferamnt[0];
+        var transferTo=transferamnt[1];
+        var uid=uuu[0];
+       
+
+        if(uid!=undefined){
+            $('.movements__row'+uid+'').hide();
+            $('#movementid #withdrawDiv').hide();
+        }
+       
         if(userId=='' || pwd==''){
             alert("Please enter all field");
         }
-        else {
+       
+        else{
         var i=0;
             for(i=0 ;i<accounts.length;i++){
+                // var accountdetail=accounts[i];
+                // var username=accountdetail.owner;
+                // var uuid=username.substring(0,2);
+                // var Pin=accountdetail.pin;
+
                 var accountdetail=accounts[i];
                 var username=accountdetail.owner;
-                var uuid=username.substring(0,2);
+                var uui = username.split(" ");
+                var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
                 var Pin=accountdetail.pin;
     
                 if(userId==uuid && pwd==Pin){
                     debugger;
-                    $('.app').css('opacity', '100');
+                    // $('.app').css('opacity', '100');
+                    // $('.welcome').text("Welcome back, "+username+"");
+                    // $('.login').show();
+
+                    containerApp.style.opacity = "1";
+                    // $('.app').css('opacity', '100');
                     $('.welcome').text("Welcome back, "+username+"");
                     $('.login').hide();
-                 
+                    uuuid = uuid;
+                    pPin = Pin;
+                    uUsername = username;
 
-                    var j;
-                    for(j=0; j<accountdetail.movements.length;j++){
+                    var intval = setInterval(updateCountDown, 1000);
+                    setTimeout(() => { 
+                        clearInterval(intval);
+                        containerApp.style.opacity = "0";
+                        $('.welcome').text(" Log in to get started ");
+                        $('.login').show();
+
+                     }, time*1000);
+
+              
+                 var netAmnt=0;
+                 var deposit=0;
+                 var withdraw=0;
+
+                    for(var j=0; j<accountdetail.movements.length;j++){
                         var value=accountdetail.movements[j];
                         var date=accountdetail.movementsDates[j];
+                         netAmnt=netAmnt+parseFloat(value);
+                         $('.balance__value').text(netAmnt);
+                    var ms=Pin+j+1;
                         if(value>0){
-                             var d=$('<div class="movements__row" id="depositDiv"><div class="movements__type movements__type--deposit"> 1 deposit</div> <div class="movements__date" id=dateid'+j+'></div> <div class="movements__value" id=amountVal'+j+'></div>');
+                            deposit=deposit+parseFloat(value);
+                           
+                             var d=$('<div class="movements__row'+userId+'" id="depositDiv'+userId+'"><div class="movements__type movements__type--deposit"> 1 deposit</div> <div class="movements__date" id=dateid'+ms+'></div> <div class="movements__value" id=amountVal'+ms+'></div>');
                                 $('#movementid').append(d);
-                                $('#dateid'+j+'').text(date);
-                                $('#amountVal'+j+'').text(value);
+                                $('#dateid'+ms+'').text(date);
+                                $('#amountVal'+ms+'').text(value);
+                                $('.movements__row'+userId+'').css('padding','2.25rem 4rem');
+                                $('.movements__row'+userId+'').css('display','flex');
+                                $('.movements__row'+userId+'').css('align-items','center');
+                                $('.movements__row'+userId+'').css('border-bottom','1px solid #eee');
+
                         }
                         else{
-                            var w=$('<div class="movements__row" id="withdrawDiv"> <div class="movements__type movements__type--withdrawal"> 1 withdrawal</div> <div class="movements__date" id=drawdateid'+j+'> </div> <div class="movements__value" id=drawVal'+j+'></div></div>');
+                            withdraw=withdraw-value;
+                            var w=$('<div class="movements__row" id="withdrawDiv"> <div class="movements__type movements__type--withdrawal"> 1 withdrawal</div> <div class="movements__date" id=drawdateid'+ms+'> </div> <div class="movements__value" id=drawVal'+ms+'></div></div>');
                                 $('#movementid').append(w);
-                                $('#drawdateid'+j+'').text(date);
-                                $('#drawVal'+j+'').text(value);
+                                $('#drawdateid'+ms+'').text(date);
+                                $('#drawVal'+ms+'').text(value);
+                                 
                         }
+                        
                     }
-
+                    $('#deposit').text(deposit);
+                    $('#withdraw').text(withdraw);
                     event.preventDefault() 
 
                      
@@ -172,7 +237,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
         var transferAcnt=$("#transferaAcc").val();
         var amountToTransfer=$("#amountTransfer").val();
         var userId= $('#UserId').val();
-
+        var counter;
         var countUser=0;
         var valid1=0;
         var valid2=0;
@@ -181,29 +246,42 @@ const inputClosePin = document.querySelector('.form__input--pin');
             var username=accountdetail.owner;
             var uuid=username.substring(0,2);
             var totamnt=accountdetail.movements;
-            var subtotal=0;
+           
+            if(userId==uuid){
+                var subtotal=0;
+
+                for(var k=0;k<totamnt.length;k++){
+                    subtotal=subtotal+parseInt(totamnt[k]);
+                }
+            }
             
             if(username==transferAcnt && userId!=uuid){
                 countUser=countUser+1;
                 if(amountToTransfer>0){
                     valid1=valid1+1;
-                    for(var j=0;j<totamnt.length;j++){
-                        var tot=parseInt(totamnt[j]);
-                        subtotal=subtotal+tot;
-
-                    }
+                     
                         if(subtotal>amountToTransfer){
                             valid2=valid2+1;
+                            var net=subtotal-amountToTransfer;
+                            $('.balance__value').text(net);
                                accountdetail.movements.push(amountToTransfer);
-                               var h=$('<div class="movements__row" id="withdrawDiv"> <div class="movements__type movements__type--withdrawal"> 1 withdrawal</div> <div class="movements__date" id=dradateid'+j+'> </div> <div class="movements__value" id=drawVal'+amountToTransfer+'></div></div>');
+                               transferamnt.push(amountToTransfer,uuid);
+                               var today = new Date();
+                               var second = today.getSeconds();
+                               var h=$('<div class="movements__row" id="withdrawDiv"> <div class="movements__type movements__type--withdrawal"> 1 withdrawal</div> <div class="movements__date" id=dradateid'+second+'> </div> <div class="movements__value" id=drawVal'+second+'></div></div>');
                                $('#movementid').append(h);
                                var fd = new Date(Date.now()) ;
-                               var today = new Date();
+                               uuu.push(userId);
+                              
+
+                              
                            var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
                            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
                           var dateTime = date + ' ' + time;
-                               $('#dradateid'+j+'').text(dateTime);
-                               $('#drawVal'+amountToTransfer+'').text(amountToTransfer);
+                               $('#dradateid'+second+'').text(dateTime);
+                               $('#drawVal'+second+'').text(amountToTransfer);
+                               accountdetail.movementsDates.push(dateTime);
+
                                event.preventDefault() 
                         }
                     
@@ -222,3 +300,35 @@ const inputClosePin = document.querySelector('.form__input--pin');
         event.preventDefault() 
     })
   
+    $("#btnClose" ).click(function(event) {
+
+        var closeUserId= $('#closeUserId').val();
+        var closePwd=$('#closePwd').val();
+
+        if(closeUserId=='' || closePwd==''){
+            alert("Please enter all field");
+        }
+        else if(closeUserId==uuuid && closePwd==pPin){
+            containerApp.style.opacity = "0";
+            $('.welcome').text("Bye "+uUsername+" ! Hope to See you Again");
+            $('.login').hide();
+            clearInterval(intval);
+        }
+        
+        event.preventDefault()
+    });
+
+
+    function updateCountDown(){
+        const minutes = Math.floor(time/60);
+        let second = time % 60;
+      
+        // console.log(minutes+":"+second)
+        console.log(labelTimer);
+        labelTimer.innerHTML = minutes +":"+second;
+    
+        if(time>0){
+            time--;
+        } 
+        console.log(time)
+      }
