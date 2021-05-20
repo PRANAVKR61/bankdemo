@@ -123,7 +123,7 @@ var uUsername;
 const startingMinutes = 5;
 var time = startingMinutes * 60;
 const labelTimer = document.querySelector('.timer');
-
+var intval;
 
     $("#btnLogin" ).click(function(event) {
         debugger;
@@ -158,7 +158,8 @@ const labelTimer = document.querySelector('.timer');
                 var uui = username.split(" ");
                 var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
                 var Pin=accountdetail.pin;
-                
+                var intrest=accountdetail.interestRate;
+
     
                 if(userId==uuid && pwd==Pin){
                     debugger;
@@ -169,12 +170,12 @@ const labelTimer = document.querySelector('.timer');
                     containerApp.style.opacity = "1";
                     // $('.app').css('opacity', '100');
                     $('.welcome').text("Welcome back, "+username+"");
-                    $('.login').hide();
+                   // $('.login').hide();
                     uuuid = uuid;
                     pPin = Pin;
                     uUsername = username;
 
-                    var intval = setInterval(updateCountDown, 1000);
+                     intval = setInterval(updateCountDown, 1000);
                     setTimeout(() => { 
                         clearInterval(intval);
                         containerApp.style.opacity = "0";
@@ -196,7 +197,7 @@ const labelTimer = document.querySelector('.timer');
                     var ms=Pin+j+1;
                         if(value>0){
                             deposit=deposit+parseFloat(value);
-                           
+                          
                              var d=$('<div class="movements__row'+userId+'" id="depositDiv'+userId+'"><div class="movements__type movements__type--deposit"> 1 deposit</div> <div class="movements__date" id=dateid'+ms+'></div> <div class="movements__value" id=amountVal'+ms+'></div>');
                                 $('#movementid').append(d);
                                 $('#dateid'+ms+'').text(date);
@@ -207,8 +208,9 @@ const labelTimer = document.querySelector('.timer');
                                 $('.movements__row'+userId+'').css('border-bottom','1px solid #eee');
 
                         }
+
                         else{
-                            withdraw=withdraw-value;
+                            withdraw=(withdraw-value).toFixed(2);
                             var w=$('<div class="movements__row" id="withdrawDiv"> <div class="movements__type movements__type--withdrawal"> 1 withdrawal</div> <div class="movements__date" id=drawdateid'+ms+'> </div> <div class="movements__value" id=drawVal'+ms+'></div></div>');
                                 $('#movementid').append(w);
                                 $('#drawdateid'+ms+'').text(date);
@@ -219,6 +221,8 @@ const labelTimer = document.querySelector('.timer');
                     }
                     $('#deposit').text(deposit);
                     $('#withdraw').text(withdraw);
+                    var totIntrest=((deposit*intrest)/100).toFixed(2);
+                    $('#intrest').text(totIntrest);
                     event.preventDefault() 
 
                      
@@ -234,7 +238,7 @@ const labelTimer = document.querySelector('.timer');
 
  
     $('#TransferMoney').on('click',function(event){
-        //debugger;
+        debugger;
         var transferAcnt=$("#transferaAcc").val();
         var amountToTransfer=$("#amountTransfer").val();
         var userId= $('#UserId').val();
@@ -242,11 +246,17 @@ const labelTimer = document.querySelector('.timer');
         var countUser=0;
         var valid1=0;
         var valid2=0;
+
+        var newwithdraw= $("#withdraw").text();
         for(var i=0; i<accounts.length;i++){
             var accountdetail=accounts[i];
             var username=accountdetail.owner;
-            var uuid=username.substring(0,2);
+            //var uuid=username.substring(0,2);
+            var uui = username.split(" ");
+            var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
             var totamnt=accountdetail.movements;
+
+            
            
             if(userId==uuid){
                 var subtotal=0;
@@ -273,7 +283,12 @@ const labelTimer = document.querySelector('.timer');
                                $('#movementid').append(h);
                                var fd = new Date(Date.now()) ;
                                uuu.push(userId);
-                              
+                             
+                              var totWithdraw=parseFloat(newwithdraw)+parseFloat(amountToTransfer);
+
+                              $('#withdraw').text(totWithdraw);
+
+
 
                               
                            var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -302,7 +317,7 @@ const labelTimer = document.querySelector('.timer');
     })
   
     $("#btnClose" ).click(function(event) {
-
+  debugger;
         var closeUserId= $('#closeUserId').val();
         var closePwd=$('#closePwd').val();
 
@@ -312,7 +327,7 @@ const labelTimer = document.querySelector('.timer');
         else if(closeUserId==uuuid && closePwd==pPin){
             containerApp.style.opacity = "0";
             $('.welcome').text("Bye "+uUsername+" ! Hope to See you Again");
-            $('.login').hide();
+            //$('.login').hide();
             clearInterval(intval);
         }
         
@@ -333,3 +348,48 @@ const labelTimer = document.querySelector('.timer');
         } 
         console.log(time)
       }
+
+      $('#loanRequest').click(function(event){
+          debugger;
+         var loanAmnt=$('#requestLoan').val();
+         var depositamount=$('#deposit').text();
+         isApplicable=(depositamount*10)/100;
+         var userId= $('#UserId').val();
+        var depositValue= $('#deposit').text();
+        var updateDeposite;
+        
+         if(isApplicable>loanAmnt){
+            for(var i=0; i<accounts.length;i++){
+                var accountdetail=accounts[i];
+                var username=accountdetail.owner;
+                var uui = username.split(" ");
+                var uuid=uui[0].substring(0,1).toLowerCase() + uui[1].substring(0,1).toLowerCase();
+                var totamnt=accountdetail.movements;
+                var today = new Date();
+                var second = today.getSeconds();
+                if(userId==uuid){
+                    var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                    var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                    var dateTime = date + ' ' + time;
+                    var d=$('<div class="movements__row" id="depositDiv"><div class="movements__type movements__type--deposit"> 1 deposit</div> <div class="movements__date" id=dateid'+second+'></div> <div class="movements__value" id=amountVal'+second+'></div>');
+                     $('#movementid').append(d);
+                     $('#dateid'+second+'').text(dateTime);
+                     $('#amountVal'+second+'').text(loanAmnt);
+                     accountdetail.movementsDates.push(dateTime);
+                     updateDeposite=parseFloat(loanAmnt)+parseFloat(depositValue);
+                     $('#deposit').text(updateDeposite);
+                     var totIntrest=((updateDeposite*accountdetail.interestRate)/100).toFixed(2);
+                     $('#intrest').text(totIntrest);
+
+
+
+                }
+            }
+
+         }
+
+         else{
+             alert("You cannot send this amount");
+         }
+         event.preventDefault();
+      })
